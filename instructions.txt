@@ -1,22 +1,19 @@
-## Game Overview
+### Game Overview
 - Three AI models (**ChatGPT**, **Gemini**, **Deepseek**) will compete in multiple rounds.
 - Each round consists of role rotations: **Asker**, **Responder**, and **Judge**.
 
-## Roles
+### Roles
 1. **Asker**: Generates a deterministic, factual, and verifiable question.
 2. **Responder**: Attempts to answer the question accurately.
 3. **Judge**: Evaluates the correctness of the response and the determinism of the question.
 
-## Scoring
+### Scoring
 - **Correct answer**: Responder gains **1 point**.
 - **Incorrect answer**: Asker gains **1 point**.
 - **Non-deterministic question** (after 3 attempts): Asker loses **0.5 points**.
 
-## Rules
+### Rules
 - Questions should focus on math, physics, and historical facts with fixed values.
 - Avoid subjective, ambiguous, or data-sensitive questions.
 - Each round includes **two questions** (one from each Asker).
 
----
-
-# Let the challenge begin!

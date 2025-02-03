@@ -1,16 +1,18 @@
-import numpy as np
 import streamlit as st
+from challenge1 import run_game
 
 
-st.set_page_config(page_title="AI Challenge Game")
+st.set_page_config(page_title="Ultimate AI Clash")
 st.sidebar.title("API Keys")
 openai_api_key = st.sidebar.text_input("Open AI API Key", key="openai_api_key")
 vertex_api_key = st.sidebar.text_input("Vertex AI API Key", key="vertexai_api_key")
 
 
-st.title("AI Models Challenge Game")
-st.subheader("Mirror, Mirror on the Wall, Who's the Smartest AI of All")
-st.divider()
+st.title("Ultimate AI Clash")
 
-instructions = open("instructions.txt", "r").read()
-st.markdown(instructions)
+if "game_started" not in st.session_state:
+    instructions = open("instructions.txt", "r").read()
+    st.markdown(instructions)
+
+if st.button("Let the challenge begin", type="primary"):
+    st.session_state["game_started"] = True
