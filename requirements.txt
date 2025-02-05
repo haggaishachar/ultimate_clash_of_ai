@@ -1,9 +1,9 @@
 python-dotenv
-langchain
 openai
+langchain
+langchain-core
 langchain_community
 langchain-openai
-langchain-core
 langchain-google-vertexai
-streamlit
 langchain-anthropic
+streamlit
