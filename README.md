@@ -65,7 +65,7 @@ Select the desired mode from the sidebar when running the app.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/haggaishachar/ultimate-clash-of-ai.git
+   git clone https://github.com/haggaishachar/ultimate_clash_of_ai.git
    cd ultimate-clash-of-ai
    ```
 
