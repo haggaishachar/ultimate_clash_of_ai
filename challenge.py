@@ -1,9 +1,5 @@
 import logging
 import re
-from langchain_openai import ChatOpenAI
-from langchain_google_vertexai import VertexAI
-from langchain_deepseek import ChatDeepSeek
-from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 import dotenv
 
@@ -180,6 +176,11 @@ def play_round(round_num, ai_models):
         dimension_scores[asker.name]["Count"] += 1
 
 def run_game(rounds, competitors_arr):
+    from langchain_openai import ChatOpenAI
+    from langchain_google_vertexai import VertexAI
+    from langchain_deepseek import ChatDeepSeek
+    from langchain_anthropic import ChatAnthropic
+
     try:
         agents = []
         for competitor in competitors_arr:
