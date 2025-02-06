@@ -41,7 +41,9 @@ def live_mode_container():
     rounds = st.sidebar.number_input("Number of Rounds:", min_value=1, value=1)
 
     if st.sidebar.button("⚡ Start a Live Challenge", type="primary"):
-        st.session_state['mode'] = 'live'
+        if not os.environ.get("OPENAI_API_KEY"):
+            st.warning("Live mode can only run locally with the API keys set")
+            return
 
         competitors = [
             {'name': 'ChatGPT', 'model': openai_model, 'type': 'openai'},
@@ -54,6 +56,8 @@ def live_mode_container():
         st.empty()
         messages = run_game(rounds=rounds, competitors_arr=competitors)
         print_game(competitors=competitors, messages=messages, save=True)
+        st.session_state['mode'] = 'live'
+
 
 
 def print_game(competitors, messages, save):
