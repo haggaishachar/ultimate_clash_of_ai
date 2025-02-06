@@ -2,6 +2,8 @@ import logging
 import re
 from langchain_openai import ChatOpenAI
 from langchain_google_vertexai import VertexAI
+from langchain_deepseek import ChatDeepSeek
+from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 import dotenv
 
@@ -50,12 +52,21 @@ def generate_question(agent):
 
 def validate_question_determinism(judge, question):
     checklist = open('prompts/checklist.md', 'r').read()
-    messages = [SystemMessage(content=f"{checklist}\nQuestion: '{question}'\nRespond with a number from 0 to 10 only.")]
+
+    messages = [
+        SystemMessage(content=instructions),
+        SystemMessage(content='Act as a Judge'),
+        HumanMessage(content=f"{checklist}\nQuestion: '{question}'\nRespond with a number from 0 to 10 only.")
+    ]
     response = judge.invoke(messages)
     return extract_score(extract_content(response)) >= 7
 
 def respond_to_question(agent, question):
-    messages = [HumanMessage(content=question)]
+    messages = [
+        SystemMessage(content=instructions),
+        SystemMessage(content='Act as a Responder'),
+        HumanMessage(content=question)
+    ]
     response = agent.invoke(messages)
     answer = extract_content(response)
 
@@ -75,7 +86,9 @@ def evaluate_answer(evaluator, question, answer, explanation):
 
     for crit, description in criteria.items():
         messages = [
-            SystemMessage(
+            SystemMessage(content=instructions),
+            SystemMessage(content='Act as a Judge'),
+            HumanMessage(
                 content=f"Evaluate the answer based on {crit}: {description}\nQuestion: '{question}'\nAnswer: '{answer}'\nExplanation: '{explanation}'\nProvide a score from 0 to 10 only."
             )
         ]
@@ -93,7 +106,9 @@ def evaluate_question(evaluator, question):
 
     for crit, description in question_criteria.items():
         messages = [
-            SystemMessage(
+            SystemMessage(content=instructions),
+            SystemMessage(content='Act as a Judge'),
+            HumanMessage(
                 content=f"Evaluate the question based on {crit}: {description}\nQuestion: '{question}'\nProvide a score from 0 to 10 only."
             )
         ]
@@ -165,59 +180,69 @@ def play_round(round_num, ai_models):
         dimension_scores[asker.name]["Count"] += 1
 
 def run_game(rounds, competitors_arr):
-    agents = []
-    for competitor in competitors_arr:
-        if competitor['type'] == 'openai':
-            agent = ChatOpenAI(model_name=competitor['model'], temperature=1)
-        elif competitor['type'] == 'vertexai':
-            location = competitor.get('location', "us-central1")
-            agent = VertexAI(model_name=competitor['model'], temperature=1, location=location)
-        agent.name = competitor['name']
-        agents.append(agent)
+    try:
+        agents = []
+        for competitor in competitors_arr:
+            if competitor['type'] == 'openai':
+                agent = ChatOpenAI(model_name=competitor['model'], temperature=1)
+            elif competitor['type'] == 'vertexai':
+                location = competitor.get('location', "us-central1")
+                agent = VertexAI(model_name=competitor['model'], temperature=1, location=location)
+            elif competitor['type'] == 'deepseek':
+                agent = ChatDeepSeek(model_name=competitor["model"], temperature=1)
+            elif competitor['type'] == 'anthropic':
+                agent = ChatAnthropic(model_name=competitor["model"], temperature=1)
+            agent.name = competitor['name']
+            agents.append(agent)
 
-    global scores, dimension_scores
-    scores = {model.name: 0 for model in agents}
-    dimension_scores = {
-        model.name: {"Accuracy": 0, "Reasoning": 0, "Communication": 0, "Strategy": 0, "Creativity": 0, "Count": 0}
-        for model in agents
-    }
+        global scores, dimension_scores
+        scores = {model.name: 0 for model in agents}
+        dimension_scores = {
+            model.name: {"Accuracy": 0, "Reasoning": 0, "Communication": 0, "Strategy": 0, "Creativity": 0, "Count": 0}
+            for model in agents
+        }
 
-    yield {'role': 'AI', 'content': instructions}
+        yield {'role': 'AI', 'content': instructions}
 
-    competitors_md = """
+        competitors_md = """
 **Please welcome our competitors:**
 
-| AI Model   | Model in Use              |
-|------------|---------------------------|
+| AI Model    | Model in Use         |
+|-------------|----------------------|
 """
-    for competitor in competitors_arr:
-        competitors_md += f"| {competitor['name']} | {competitor['model']} |\n"
 
-    yield {'role': 'AI', 'content': competitors_md}
+        # Adding Competitors
+        for competitor in competitors_arr:
+            competitors_md += f"| {competitor['name']} | {competitor['model']} |\n"
 
-    for round_num in range(rounds):
-        yield from play_round(round_num, agents)
+        yield {'role': 'AI', 'content': competitors_md}
 
-    final_summary_md = """
+        for round_num in range(rounds):
+            yield from play_round(round_num, agents)
+
+        final_summary_md = """
 **End of Game Scores**
+
 | AI Model | Total Score | Accuracy | Reasoning | Communication | Strategy | Creativity |
 |:---------|------------:|---------:|----------:|--------------:|---------:|-----------:|
 """
-    for model in scores.keys():
-        count = dimension_scores[model]['Count'] or 1
-        avg_accuracy = round((dimension_scores[model]['Accuracy'] / count) * 2, 2)
-        avg_reasoning = round((dimension_scores[model]['Reasoning'] / count) * 2, 2)
-        avg_communication = round((dimension_scores[model]['Communication'] / count) * 2, 2)
-        avg_strategy = round((dimension_scores[model]['Strategy'] / count) * 2, 2)
-        avg_creativity = round((dimension_scores[model]['Creativity'] / count) * 2, 2)
+        for model in scores.keys():
+            count = dimension_scores[model]['Count'] or 1
+            avg_accuracy = round((dimension_scores[model]['Accuracy'] / count) * 2, 2)
+            avg_reasoning = round((dimension_scores[model]['Reasoning'] / count) * 2, 2)
+            avg_communication = round((dimension_scores[model]['Communication'] / count) * 2, 2)
+            avg_strategy = round((dimension_scores[model]['Strategy'] / count) * 2, 2)
+            avg_creativity = round((dimension_scores[model]['Creativity'] / count) * 2, 2)
 
-        total_score = round((avg_accuracy + avg_reasoning + avg_communication + avg_strategy + avg_creativity) / 5, 2)
+            total_score = round((avg_accuracy + avg_reasoning + avg_communication + avg_strategy + avg_creativity) / 5, 2)
 
-        final_summary_md += (f"| {model} | {total_score} "
-                             f"| {avg_accuracy} "
-                             f"| {avg_reasoning} "
-                             f"| {avg_communication} "
-                             f"| {avg_strategy} "
-                             f"| {avg_creativity} |\n")
+            final_summary_md += (f"| {model} | {total_score} "
+                                 f"| {avg_accuracy} "
+                                 f"| {avg_reasoning} "
+                                 f"| {avg_communication} "
+                                 f"| {avg_strategy} "
+                                 f"| {avg_creativity} |\n")
 
-    yield {'role': 'AI', 'content': final_summary_md}
+        yield {'role': 'AI', 'content': final_summary_md}
+    except Exception as ex:
+        yield {'role': 'AI', 'content': f"Error: {ex}"}

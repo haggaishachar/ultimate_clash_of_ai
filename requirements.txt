@@ -6,4 +6,5 @@ langchain_community
 langchain-openai
 langchain-google-vertexai
 langchain-anthropic
+langchain-deepseek
 streamlit

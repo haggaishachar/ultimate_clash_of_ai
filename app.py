@@ -24,12 +24,20 @@ def sim_mode_container():
 
 
 def live_mode_container():
-    st.sidebar.title("Live Mode")
+    st.sidebar.title("Live Mode (local only)")
 
-    openai_model = st.sidebar.text_input("ChatGPT Model:", "gpt-4o-mini")
-    vertex_model = st.sidebar.text_input("Gemini Model:", "gemini-2.0-flash-exp")
-    # anthropic_model = st.sidebar.text_input("Anthropic Model", "claude-3-5-haiku")
-    llama_model = st.sidebar.text_input("Llama Model:", "llama-3.1-8b-instruct-maas")
+    # openai_model = st.sidebar.text_input("ChatGPT Model:", "gpt-4o-mini")
+    openai_model = st.sidebar.text_input("ChatGPT Model:", "gpt-4o")
+
+    # vertex_model = st.sidebar.text_input("Gemini Model:", "gemini-2.0-pro-exp-02-05")
+    vertex_model = st.sidebar.text_input("Gemini Model:", "gemini-1.5-pro-002")
+
+    anthropic_model = st.sidebar.text_input("Anthropic Model", "claude-3-5-sonnet-20241022")
+    # anthropic_model = st.sidebar.text_input("Anthropic Model", "claude-3-haiku-20240307")
+
+    # deepseek_model = st.sidebar.text_input("DeepSeek Model:", "deepseek-chat")
+    # llama_model = st.sidebar.text_input("Llama Model:", "llama-3.1-8b-instruct-maas")
+
     rounds = st.sidebar.number_input("Number of Rounds:", min_value=1, value=1)
 
     if st.sidebar.button("⚡ Start a Live Challenge", type="primary"):
@@ -38,7 +46,9 @@ def live_mode_container():
         competitors = [
             {'name': 'ChatGPT', 'model': openai_model, 'type': 'openai'},
             {'name': 'Gemini', 'model': vertex_model, 'type': 'vertexai'},
-            {'name': 'Llama', 'model': llama_model, 'type': 'vertexai', 'location': "us-central1"},
+            {'name': 'Claude', 'model': anthropic_model, 'type': 'anthropic'},
+            # {'name': 'Llama', 'model': llama_model, 'type': 'vertexai', 'location': "us-central1"},
+            # {'name': 'DeepSeek', 'model': deepseek_model, 'type': 'deepseek'}
         ]
 
         st.empty()

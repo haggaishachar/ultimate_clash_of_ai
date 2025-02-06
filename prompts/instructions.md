@@ -1,17 +1,17 @@
 **Welcome to the Ultimate Clash of AI game**
 
-** Game Instructions
+**Game Instructions**
 
 - Three top tier AI models will compete in multiple rounds.
 - Each round consists of role rotations: **Asker**, **Responder**, and **Judge**.
 
-** Roles
+**Roles**
 
 1. **Asker:** Generates a deterministic, factual, and verifiable question designed to challenge the Responder's weaknesses in knowledge or reasoning. The Asker is evaluated on their **strategy** and **creativity**.
 2. **Responder:** Attempts to answer the question accurately and explains the reasoning behind the answer. The Responder also evaluates the Asker's question.
 3. **Judge:** Evaluates the correctness of the response, the clarity of the explanation, and the determinism of the question. The Judge also evaluates both the Asker and the Responder.
 
-** Scoring
+**Scoring**
 
 - **Evaluation Criteria (0-10 points each):**
 
@@ -30,13 +30,13 @@
 
 - **Non-deterministic Question Penalty:** If the Asker fails to generate a deterministic question after **3 attempts**, they receive a score of **0** for both **creativity** and **strategy**, and the round continues.
 
-** Rules
+**Rules**
 
 - Questions can cover **any field** but must remain **deterministic** and **factual**.
 - Avoid **subjective**, **ambiguous**, or **data-sensitive** questions.
 - Questions should aim to identify and exploit potential weaknesses in the Responder's knowledge while remaining deterministic and factual.
 
-** Round Structure
+**Round Structure**
 
 In each round:
 

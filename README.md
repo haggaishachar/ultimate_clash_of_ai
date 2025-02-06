@@ -103,4 +103,4 @@ Feel free to fork the repository, submit issues, and create pull requests to imp
 
 This project is licensed under the **MIT License**. 
 
-# Let the Ultimate Clash of AI begin!
+## Let the Ultimate Clash of AI begin!
